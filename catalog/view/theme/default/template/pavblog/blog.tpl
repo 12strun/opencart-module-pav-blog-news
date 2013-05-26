@@ -172,48 +172,72 @@
 						</div>
 					</div>
 					<?php } ?>
-					<h4><?php echo $this->language->get("text_leave_a_comment");?></h4>
+					<h4 id="review-title"><?php echo $this->language->get("text_leave_a_comment");?></h4>
 					<form action="<?php echo $comment_action;?>" method="post" id="comment-form">
 						<div class="message" style="display:none"></div>
 						<div class="input-group">
-							<label for="comment-user"><?php echo $this->language->get('entry_name');?></label>
-							<input name="comment[user]" value="" id="comment-user"/>
+							<label for="comment-name"><?php echo $this->language->get('entry_name');?></label>
+							<input name="name" value="" id="comment-name" />
 						</div>
 						<div class="input-group">
 							<label for="comment-email"><?php echo $this->language->get('entry_email');?></label>
-							<input name="comment[email]" value="" id="comment-email"/>
+							<input name="email" value="" id="comment-email" />
 						</div>
 						<div class="input-group">
-							<label for="comment-comment"><?php echo $this->language->get('entry_comment');?></label>
-							<textarea name="comment[comment]"  id="comment-comment"></textarea>
+							<label for="comment-text"><?php echo $this->language->get('entry_comment');?></label>
+							<textarea name="text"  id="comment-text"></textarea>
 						</div>
 						<?php if( $config->get('enable_recaptcha') ) { ?>
 						<div class="recaptcha">
-							<?php echo $recaptcha; ?>
+							<br />
+              <label for="comment-captcha"><?php echo $entry_captcha; ?></label>
+              <input type="text" name="captcha" value="" id="comment-captcha" />
+              <br />
+              <img src="index.php?route=product/product/captcha" alt="" id="comment-captcha" /><br />
+              <br />
+							<?php //echo $recaptcha; ?>
 						</div>
 						<?php } ?>
-						<input type="hidden" name="comment[blog_id]" value="<?php echo $blog['blog_id']; ?>" />
+						<input type="hidden" name="blog_id" value="<?php echo $blog['blog_id']; ?>" />
 						<br/>
 						<div class="buttons">
-							<button class="btn btn-submit" type="submit">
-								<span><?php echo $this->language->get('text_submit');?></span>
-							</button>
-						</div>
-					</form>
-					<script type="text/javascript">
-						$( "#comment-form .message" ).hide();
-						$("#comment-form").submit( function(){
-							$.ajax( {type: "POST",url:$("#comment-form").attr("action"),data:$("#comment-form").serialize(), dataType: "json",}).done( function( data ){
-								if( data.hasError ){
-									$( "#comment-form .message" ).html( data.message ).show();	
-								}else {
-									location.href='<?php echo str_replace("&amp;","&",$link);?>';
-								}
-							} );
-							return false;
-						} );
-						
-					</script>
+							<a id="button-review" class="button"><span><?php echo $this->language->get('text_submit');?></span></a>
+            </div>
+            
+            <script type="text/javascript"><!--			
+              $('#button-review').bind('click', function() {
+              $.ajax({
+                url: 'index.php?route=pavblog/blog/comment&id=<?php echo $blog['blog_id']; ?>',
+                type: 'post',
+                dataType: 'json',
+                data: 'name=' + encodeURIComponent($('input[name=\'name\']').val()) + '&email=' + encodeURIComponent($('input[name=\'email\']').val()) + '&text=' + encodeURIComponent($('textarea[name=\'text\']').val()) + '&captcha=' + encodeURIComponent($('input[name=\'captcha\']').val()) + '&blog_id=' + encodeURIComponent($('input[name=\'blog_id\']').val()),
+                beforeSend: function() {
+                  $('.success, .warning').remove();
+                  $('#button-review').attr('disabled', true);
+                  $('#review-title').after('<div class="attention"><img src="catalog/view/theme/default/image/loading.gif" alt="" /> <?php echo $text_wait; ?></div>');
+                },
+                complete: function() {
+                  $('#button-review').attr('disabled', false);
+                  $('.attention').remove();
+                },
+                success: function(data) {
+                  if (data['error']) {
+                    $('#review-title').after('<div class="warning">' + data['error'] + '</div>');
+                  }
+			
+                  if (data['success']) {
+                    $('#review-title').after('<div class="success">' + data['success'] + '</div>');
+								
+                    $('input[name=\'name\']').val('');
+                    $('input[name=\'email\']').val('');
+                    $('textarea[name=\'text\']').val('');
+                    $('input[name=\'captcha\']').val('');
+                    $('input[name=\'blog_id\']').val('');
+                  }
+                }
+              });
+            });
+          //--></script>
 				<?php } ?>
 			<?php } ?>
 		 </div>

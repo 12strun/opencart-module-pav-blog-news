@@ -98,7 +98,10 @@
 				);		
 							
 				$this->data['heading_title'] = $blog['title'];
-				
+
+        $this->data['text_wait'] = $this->language->get('text_wait');				
+        $this->data['entry_captcha'] = $this->language->get('entry_captcha');
+        $this->data['entry_captcha'] = $this->language->get('entry_captcha');		
 				$this->data['button_continue'] = $this->language->get('button_continue');
 				
 				$this->data['description'] = html_entity_decode($blog['description'], ENT_QUOTES, 'UTF-8');
@@ -128,6 +131,8 @@
 				
 				
 				$this->data['comment_action'] = $this->url->link( 'pavblog/blog/comment','id='.$blog['blog_id'] );
+
+				
 				$this->data['blog'] = $blog;
 				$this->data['samecategory'] = $this->getModel()->getSameCategory( $blog['category_id'], $blog['blog_id'] );
 				$this->data['social_share'] =  '';
@@ -155,7 +160,8 @@
 				
 				
 				$this->data['tags'] = $tags;
-				if( $this->mparams->get('enable_recaptcha') ){  
+				
+				/* if( $this->mparams->get('enable_recaptcha') ){  
 					if ($this->config->get('config_ssl')) {
 						$recaptcha_ssl = true;
 					} else {
@@ -165,7 +171,7 @@
 					$this->data['recaptcha'] = recaptcha_get_html($this->mparams->get('recaptcha_public_key'), null, $recaptcha_ssl);
 				}else {
 					$this->data['recaptcha'] = null;
-				}
+				} */
 				$this->data['link'] =  $this->url->link( 'pavblog/blog','id='.$blog['blog_id'] );
 				
 				if (isset($this->request->get['page'])) {
@@ -216,7 +222,7 @@
 				);
 					
 				$this->document->setTitle($this->language->get('text_error'));
-				
+
 				$this->data['heading_title'] = $this->language->get('text_error');
 
 				$this->data['text_error'] = $this->language->get('text_error');
@@ -248,42 +254,53 @@
 		 * process adding comment
 		 */
 		public function comment(){
-			$this->preload();
-			$error = array();
-			
+		
+		$this->preload();
 
-			if( isset($this->request->post['comment']) ){
-				$d = array('email'=>'','user'=>'','comment'=>'','blog_id'=>'');
-			
-				$data = $this->request->post['comment'];
-				$data  = array_merge( $d,$data );
-				if( $this->mparams->get('enable_recaptcha') ){ 
-					require_once(DIR_SYSTEM . 'library/recaptchalib.php');
-					$response = recaptcha_check_answer($this->mparams->get('recaptcha_private_key'), $this->request->server['REMOTE_ADDR'], $this->request->post['recaptcha_challenge_field'], $this->request->post['recaptcha_response_field']);
-				
-					if (!$response->is_valid) {
-						$error['captcha'] = $this->language->get('error_captcha');
-					}
-				}
-				
-				if( !preg_match( "/^([a-zA-Z0-9])+([a-zA-Z0-9\._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9\._-]+)+$/", $data['email'])) {
-					 $error['email'] = $this->language->get('error_email');
-				}
-				if( empty($data['comment']) ){
-					$error['comment'] = $this->language->get('error_comment');
-				}
-				if( empty($data['user']) ){
-					$error['user'] = $this->language->get('error_user');
-				}
-				
-				if( empty($error) && $data['blog_id'] ){
-					$this->getModel('comment')->saveComment( $data, $this->mparams->get('auto_publish_comment') );
-					$output = array('hasError'=>false, 'message'=> '' );
-					echo json_encode( $output );die();
-				}
+		$json = array();
+		
+		if ($this->request->server['REQUEST_METHOD'] == 'POST') {
+			if ((utf8_strlen($this->request->post['name']) < 3) || (utf8_strlen($this->request->post['name']) > 25)) {
+				$json['error'] = $this->language->get('error_name');
 			}
-			$output = array('hasError'=>true, 'message'=> implode("<br> \r\n ", $error ) );
-			echo json_encode( $output );die();
+			
+			if( !preg_match( "/^([a-zA-Z0-9])+([a-zA-Z0-9\._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9\._-]+)+$/", $this->request->post['email'])) {
+				$json['error'] = $this->language->get('error_email');
+      }
+      
+			if ((utf8_strlen($this->request->post['text']) < 25) || (utf8_strlen($this->request->post['text']) > 1000)) {
+				$json['error'] = $this->language->get('error_comment');
+			}
+	
+			if (empty($this->session->data['captcha']) || ($this->session->data['captcha'] != $this->request->post['captcha'])) {
+				$json['error'] = $this->language->get('error_captcha');
+			}
+				
+			if (!isset($json['error'])) {
+        $data = array(
+            'email'   =>  $this->request->post['email'],
+            'user'    =>  html_entity_decode($this->request->post['name'], ENT_QUOTES, 'UTF-8'),
+            'comment' =>  html_entity_decode($this->request->post['text'], ENT_QUOTES, 'UTF-8'),
+            'blog_id' =>  $this->request->post['blog_id']
+          );			
+          
+				$this->getModel('comment')->saveComment( $data, $this->mparams->get('auto_publish_comment') );
+				
+				$json['success'] = $this->language->get('text_success');
+			}
 		}
+		
+		$this->response->setOutput(json_encode($json));
+
+		}
+		
+		// Captcha
+		public function captcha() {
+      $this->load->library('captcha');
+      $captcha = new Captcha();
+      $this->session->data['captcha'] = $captcha->getCode();
+      $captcha->showImage();
+    }
+    
 	}	
 	?>

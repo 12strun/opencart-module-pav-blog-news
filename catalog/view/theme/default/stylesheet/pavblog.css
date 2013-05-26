@@ -117,7 +117,8 @@
 		width: 77%;
 	}
 
-		#comment-form  .recaptcha{padding:12px; }
+		#comment-form  .recaptcha { padding: 12px 0; }
+		input#comment-captcha { width: 140px; }
    /**
     * Module
 	*/
