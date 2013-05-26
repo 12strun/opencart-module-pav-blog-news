@@ -75,11 +75,19 @@ class ModelPavblogblog extends Model {
 			$languages[$language['language_id']] = $language;
 		}
 		$data['blog_description'] = $languages;
+
+		$query = $this->db->query( "SELECT `keyword` FROM " . DB_PREFIX . "url_alias WHERE query ='id=" . (int)$blogId . "'" );
+		if ($query->num_rows){
+			$data['blog']['keyword'] = $query->row['keyword'];
+		}
+
 		return $data;
 	}
 	public function saveData( $data ){
 	
 		if( $data["pavblog_blog"] ){
+			$keyword = $data['pavblog_blog']['keyword'];
+			unset($data['pavblog_blog']['keyword']);
 			if(  (int)$data['pavblog_blog']['blog_id'] > 0 ){
 				$sql = " UPDATE  ". DB_PREFIX . "pavblog_blog SET  ";
 				$tmp = array();
@@ -109,7 +117,10 @@ class ModelPavblogblog extends Model {
 				$this->db->query( $sql );
 				$data['pavblog_blog']['blog_id'] = $this->db->getLastId();
 			}
-		
+			$this->db->query( "DELETE FROM " . DB_PREFIX . "url_alias WHERE query ='id=" . (int)$data['pavblog_blog']['blog_id']  . "'" );
+			$this->db->query( "INSERT INTO " . DB_PREFIX . "url_alias SET query ='id=" . (int)$data['pavblog_blog']['blog_id']  . "',".
+							  " `keyword`='".$keyword."'" );
+
 		
 		}
 		$this->load->model('localisation/language');

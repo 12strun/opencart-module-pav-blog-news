@@ -103,6 +103,12 @@
 													</select>
 												</td>
 											</tr>
+											 <tr>
+												 <td><?php echo $this->language->get('entry_keyword');?></td>
+												 <td>
+													 <input type="text" name="pavblog_blog[keyword]" value="<?php echo $blog['keyword'];?>">
+												 </td>
+											 </tr>
 									  </table>
 									</div>
 									

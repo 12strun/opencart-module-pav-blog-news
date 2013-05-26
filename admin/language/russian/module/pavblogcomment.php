@@ -21,7 +21,7 @@ $_['text_footer_bottom']   = 'Footer Подвал';
 $_['all_page']   = 'Все страницы';
 // Entry
 $_['entry_banner']        = 'Баннер:';
-$_['entry_dimension']     = 'Размеры (Ш x В):';
+$_['entry_dimension']     = 'Размеры (Ш x В) и тип рисайза:';
 $_['entry_layout']        = 'Схема:';
 $_['entry_position']      = 'Расположение:';
 $_['entry_status']        = 'Статус:';

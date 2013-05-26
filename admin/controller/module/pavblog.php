@@ -419,7 +419,8 @@ class ControllerModulePavblog extends Controller {
 			'meta_keyword'=>'',
 			'meta_description'=>'',
 			'meta_title'=>'',
-		
+			'keyword'=>'',
+
 		);
 		
 		$blog['thumb'] = $this->data['no_image'] = $this->model_tool_image->resize('no_image.jpg', 180, 180);		
@@ -451,6 +452,7 @@ class ControllerModulePavblog extends Controller {
 		$this->data['menus'] = $this->model_pavblog_menu->getDropdown(null, $blog['category_id'], 'pavblog_blog[category_id]' );
 		$this->data['yesno'] = array( 0 => $this->language->get('нет'), 1=>$this->language->get('да') );
 		$this->data['blog'] = $blog;
+
 		$this->data['pavblog_blog_descriptions'] = $blog_descriptions;
 		$this->data['heading_title'] =  $this->language->get('blog_page_heading_title');
 		$this->setBreadcrumb();

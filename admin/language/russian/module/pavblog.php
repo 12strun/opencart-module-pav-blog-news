@@ -35,7 +35,7 @@ $_['all_page']   = 'Все Страницы';
 $_['text_image_manager']   = 'Управление  изображениями';
 // Entry
 $_['entry_banner']        = 'Баннер:';
-$_['entry_dimension']     = 'Размеры (Ш x В):';
+$_['entry_dimension']     = 'Размеры (Ш x В) и тип рисайза:';
 $_['entry_layout']        = 'Схема:';
 $_['entry_position']      = 'Расположение:';
 $_['entry_status']        = 'Статус:';
@@ -58,6 +58,7 @@ $_['entry_columns']    = 'Колонки';
 $_['entry_detail_columns'] = 'Детальное значение ширины колонки';
 $_['entry_sub_menutype'] = 'Тип подменю';
 $_['entry_submenu_content'] = 'Содержание подменю';
+$_['entry_keyword'] = 'SEO URL';
 $_['text_none'] = 'None';
 $_['text_explain_input_html'] = 'Если контент содержит HTML весь контент подменю не будет отображаться';
 $_['text_explain_input_auto'] = 'Введите букву или Слово для поиска';
