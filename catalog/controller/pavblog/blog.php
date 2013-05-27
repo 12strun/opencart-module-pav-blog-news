@@ -161,17 +161,6 @@
 				
 				$this->data['tags'] = $tags;
 				
-				/* if( $this->mparams->get('enable_recaptcha') ){  
-					if ($this->config->get('config_ssl')) {
-						$recaptcha_ssl = true;
-					} else {
-						$recaptcha_ssl = false;
-					}
-					require_once(DIR_SYSTEM . 'library/recaptchalib.php');
-					$this->data['recaptcha'] = recaptcha_get_html($this->mparams->get('recaptcha_public_key'), null, $recaptcha_ssl);
-				}else {
-					$this->data['recaptcha'] = null;
-				} */
 				$this->data['link'] =  $this->url->link( 'pavblog/blog','id='.$blog['blog_id'] );
 				
 				if (isset($this->request->get['page'])) {
